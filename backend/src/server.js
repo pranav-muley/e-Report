@@ -1,27 +1,31 @@
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import morgan from 'morgan';
-import dotenv from 'dotenv';
-import { connectDB } from "./config/mongoConfig.js";
+require("dotenv").config()
 
-const PORT = process.env.PORT || 4000;
+const express = require("express")
+const cors = require("cors")
+const helmet = require("helmet")
+const morgan = require("morgan")
+const cookieParser = require("cookie-parser")
 
-dotenv.config();
+const connectDB = require("./config/mongoConfig")
+const authRoutes = require("./routes/authRoutes")
 
-// ---------- Create App ----------
-const app = express();
+const app = express()
 
-// ---------- Middlewares ----------
-app.use(express.json());
-app.use(cors());
-app.use(helmet());
-app.use(morgan('dev'));
+// 🔑 MIDDLEWARE ORDER (IMPORTANT)
+app.use(express.json())
+app.use(cookieParser())   // ✅ MUST COME BEFORE ROUTES
+app.use(cors({
+  origin: true,
+  credentials: true
+}))
+app.use(helmet())
+app.use(morgan("dev"))
 
-// check DB connection....
+// Routes
+app.use("/", authRoutes)
+
 connectDB()
 
-// ---------- Start Server ----------
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+app.listen(8081, () => {
+  console.log("Server running on port 8081")
+})

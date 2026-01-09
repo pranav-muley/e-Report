@@ -1,27 +1,38 @@
 const mongoose = require("mongoose")
 
-const CaseSchema = new mongoose.Schema(
+const caseSchema = new mongoose.Schema(
   {
-    caseNumber: {
+    // From police station report
+    branchCaseNumber: {
       type: String,
       required: true,
-      unique: true,
-      index: true
+      trim: true
     },
 
-    section: { type: String, required: true },
+    policeStationCaseNumber: {
+      type: String,
+      required: true,
+      trim: true
+    },
+
+    section: {
+      type: String,
+      required: true,
+      trim: true
+    },
 
     policeStationId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "PoliceStation",
+      ref: "policestation",
       required: true,
       index: true
     },
 
     officerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true
+      ref: "user",
+      required: true,
+      index: true
     },
 
     status: {
@@ -46,4 +57,4 @@ const CaseSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-export default mongoose.model("case", CaseSchema)
+module.exports = mongoose.model("case", caseSchema)

@@ -18,6 +18,12 @@ const PersonSchema = new mongoose.Schema(
       index: true
     },
 
+    files: {
+      signature: { type: String, default: null },
+      photo: { type: String, default: null },
+      document: { type: String, default: null }
+    },
+
     address: { type: String },
     age: { type: Number },
     gender: { type: String },

@@ -11,8 +11,7 @@ const CaseEventSchema = new mongoose.Schema(
 
     eventType: {
       type: String,
-      required: true
-      // CASE_CREATED, NOTICE_ISSUED, HEARING_FIXED, ORDER_PASSED
+      required: true // CASE_CREATED, NOTICE_ISSUED, HEARING_FIXED, ORDER_PASSED
     },
 
     referenceId: {

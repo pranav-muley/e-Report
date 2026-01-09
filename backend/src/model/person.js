@@ -3,8 +3,8 @@ const mongoose = require("mongoose")
 const PersonSchema = new mongoose.Schema(
   {
     caseId: {
-      type: Schema.Types.ObjectId,
-      ref: "Case",
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "case",
       required: true,
       index: true
     },
@@ -26,4 +26,4 @@ const PersonSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-export default mongoose.model("person", PersonSchema)
+module.exports = mongoose.model("Person", PersonSchema)

@@ -1,6 +1,6 @@
 const PDFDocument = require("pdfkit")
-const { existsSync, mkdirSync, createWriteStream } = require("fs")
-const { dirname } = require("path")
+const fs = require("fs")
+const path = require("path")
 
 
 const templates = {
@@ -8,7 +8,7 @@ const templates = {
   FINAL_ORDER: require("./templates/final_order.js")
 }
 
-export async function generatePdf({ formType, content, outputPath }) {
+async function generatePdf({ formType, content, outputPath }) {
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ size: "A4", margin: 50 })
 
@@ -32,4 +32,8 @@ export async function generatePdf({ formType, content, outputPath }) {
     stream.on("finish", resolve)
     stream.on("error", reject)
   })
+}
+
+module.exports = {
+  generatePdf
 }

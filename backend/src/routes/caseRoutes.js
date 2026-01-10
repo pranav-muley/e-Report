@@ -4,7 +4,7 @@ const router = express.Router()
 const auth = require("../middleware/authMiddleware")
 const checkRole = require("../middleware/roleMiddleware")
 
-const { createCase } = require("../controller/caseController")
+const { createCase,getMyCases, getCaseById } = require("../controller/caseController")
 
 router.post(
   "/cases",
@@ -12,5 +12,9 @@ router.post(
 //   checkRole("OFFICER", "ADMIN"),
   createCase
 )
+
+router.post("/cases", createCase)
+router.get("/cases", getMyCases)
+router.get("/cases/:caseId", getCaseById)
 
 module.exports = router

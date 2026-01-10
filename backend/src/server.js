@@ -11,6 +11,7 @@ const authRoutes = require("./routes/authRoutes")
 const caseRoutes = require("./routes/caseRoutes")
 const personRoutes = require("./routes/personRoutes")
 const policeStationRoutes = require("./routes/policeStationRoutes")
+const formRoutes = require("./routes/formRoutes")
 
 const app = express()
 
@@ -29,6 +30,7 @@ app.use("/", authRoutes)
 app.use("/", caseRoutes)
 app.use("/", personRoutes)
 app.use("/", policeStationRoutes)
+app.use("/", formRoutes)
 
 
 connectDB()

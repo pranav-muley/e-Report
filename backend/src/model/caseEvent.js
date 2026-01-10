@@ -29,4 +29,4 @@ const CaseEventSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-export default mongoose.model("caseEvent", CaseEventSchema)
+module.exports = mongoose.model("CaseEvent", CaseEventSchema)

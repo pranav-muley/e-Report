@@ -1,5 +1,7 @@
 const Form = require("../model/form")
 const CaseEvent = require("../model/caseEvent")
+const { join } = require("path")
+const { generatePdf } = require("../pdf")
 
 async function approveForm({ formId, adminUserId }) {
   const form = await Form.findById(formId)
@@ -64,9 +66,6 @@ async function rejectForm({ formId, adminUserId, reason }) {
 
   return form
 }
-
-import { join } from "path"
-import { generatePdf } from "../pdf"
 
 async function issueForm({ formId, adminUserId }) {
   const form = await Form.findById(formId)

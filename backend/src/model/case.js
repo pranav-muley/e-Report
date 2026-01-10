@@ -15,10 +15,9 @@ const caseSchema = new mongoose.Schema(
       trim: true
     },
 
-    section: {
-      type: String,
-      required: true,
-      trim: true
+    sections: {
+      type: [String],
+      required: true
     },
 
     policeStationId: {

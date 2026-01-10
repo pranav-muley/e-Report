@@ -3,7 +3,7 @@ const mongoose = require("mongoose")
 const FormSchema = new mongoose.Schema(
   {
     caseId: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Case",
       required: true,
       index: true
@@ -24,7 +24,7 @@ const FormSchema = new mongoose.Schema(
     generatedPdfPath: { type: String },
 
     issuedBy: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User"
     },
 
@@ -36,7 +36,7 @@ const FormSchema = new mongoose.Schema(
       default: "DRAFT"
     },
     approval: {
-        approvedBy: { type: Schema.Types.ObjectId, ref: "User" },
+        approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
         approvedAt: { type: Date },
         rejectionReason: { type: String }
       }
@@ -45,4 +45,4 @@ const FormSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-export default mongoose.model("form", FormSchema)
+module.exports = mongoose.model("Form", FormSchema)

@@ -13,35 +13,37 @@ const FormSchema = new mongoose.Schema(
       type: String,
       required: true,
       index: true
-      // e.g. NOTICE_130, BOND_125, FINAL_ORDER
     },
 
     content: {
-      mr: { type: Object },
-      en: { type: Object }
+      mr: { type: Object, default: {} },
+      en: { type: Object, default: {} }
     },
 
-    generatedPdfPath: { type: String },
-
-    issuedBy: {
+    // WHO CREATED THE FORM (VERY IMPORTANT)
+    createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
+      ref: "User",
+      required: true,
+      index: true
     },
-
-    issuedAt: { type: Date },
 
     status: {
       type: String,
-      enum: ["DRAFT", "GENERATED", "SIGNED", "SERVED"],
-      default: "DRAFT"
+      enum: ["DRAFT", "SUBMITTED", "APPROVED", "REJECTED"],
+      default: "DRAFT",
+      index: true
     },
-    approval: {
-        approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-        approvedAt: { type: Date },
-        rejectionReason: { type: String }
-      }
-  },
 
+    approval: {
+      approvedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+      },
+      approvedAt: { type: Date },
+      rejectionReason: { type: String }
+    }
+  },
   { timestamps: true }
 )
 

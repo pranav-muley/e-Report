@@ -14,6 +14,7 @@ const {
 const auth = require("../middleware/authMiddleware")
 const requireRole = require("../middleware/roleMiddleware")
 const generate = require("../controller/generatePdfController");
+const { addRoznamaEntry } = require("../controller/roznamaController")
 
 router.use(auth)
 // router.use(requireRole("ADMIN"))
@@ -26,5 +27,11 @@ router.post("/admin/forms/:formId/issue", issueForm)
 router.get("/admin/forms/submitted", getSubmittedForms)
 router.get("/admin/forms/:formId", getFormForAdmin)
 router.post("/api/casefiles/issue", issueCaseFileController)
+router.post(
+  "/cases/:caseId/roznama/entries",
+  auth,
+  requireAdmin,
+  addRoznamaEntry
+)
 
 module.exports = router

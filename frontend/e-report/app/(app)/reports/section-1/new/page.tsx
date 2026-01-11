@@ -63,7 +63,7 @@ export default function SectionOneForm({
         <div className="w-full flex items-center justify-center">
             <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="md:w-full min-w-md rounded-lg dark:bg-[#171717] px-10 py-10"
+                className="md:w-full min-w-md rounded-lg dark:border dark:border-accent px-10 py-10"
             >
                 <FieldGroup>
                     <FieldSet>

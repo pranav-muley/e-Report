@@ -1,9 +1,19 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, Controller } from "react-hook-form";
+import {
+    Field,
+    FieldDescription,
+    FieldGroup,
+    FieldLabel,
+    FieldLegend,
+    FieldSeparator,
+    FieldSet,
+} from "@/components/ui/field";
 
 import {
     sectionOneApplicantSchema,
@@ -11,8 +21,31 @@ import {
 } from "@/types/section-1/sectionOneApplicantSchema";
 
 import { createEmptyApplicant } from "@/utils/emptyApplicant";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dropzone, DropzoneContent, DropzoneEmptyState } from '@/components/ui/shadcn-io/dropzone';
+import { useState } from "react";
+import { UploadIcon } from "lucide-react";
+
+
 
 export default function ApplicantForm({ caseId }: { caseId: string }) {
+    const [document, setDocument] = useState<File[] | undefined>();
+    const [photo, setPhoto] = useState<File[] | undefined>();
+    const [signature, setSignature] = useState<File[] | undefined>();
+
+
+    const handleDocument = (files: File[]) => {
+        setDocument(files);
+    };
+
+    const handlePhoto = (files: File[]) => {
+        setPhoto(files);
+    }
+
+    const handleSignature = (files: File[]) => {
+        setSignature(files);
+    }
+
     const form = useForm<SectionOneApplicantValues>({
         resolver: zodResolver(sectionOneApplicantSchema),
         defaultValues: {
@@ -35,31 +68,215 @@ export default function ApplicantForm({ caseId }: { caseId: string }) {
             onSubmit={form.handleSubmit(onSubmit)}
             className="rounded-lg border p-6"
         >
-            <h3 className="font-semibold mb-4">Applicant Details</h3>
+            <FieldGroup>
+                <h3 className="font-semibold mb-4">Applicant Details</h3>
+                <div className="grid grid-cols-2 gap-4">
+                    <Controller
+                        control={form.control}
+                        name="applicant.Name"
+                        render={({ field }) => (
+                            <Field>
+                                <FieldLabel>Applicant Name</FieldLabel>
+                                <Input {...field} placeholder="John" />
+                                <FieldDescription>
+                                    Enter Applicant's Name
+                                </FieldDescription>
+                            </Field>
+                        )}
+                    />
 
-            <Input
-                {...form.register("applicant.Name")}
-                placeholder="Name"
-            />
+                    <Controller
+                        control={form.control}
+                        name="applicant.age"
+                        render={({ field }) => (
+                            <Field>
+                                <FieldLabel>Applicant Age</FieldLabel>
+                                <Input {...field} placeholder="25" />
+                                <FieldDescription>
+                                    Enter Applicant's Age
+                                </FieldDescription>
+                            </Field>
+                        )}
+                    />
 
-            <Input
-                {...form.register("applicant.age")}
-                placeholder="Age"
-            />
+                </div>
 
-            <Input
-                {...form.register("applicant.mobile")}
-                placeholder="Mobile"
-            />
+                <div className="grid grid-cols-2 gap-4 items-start">
+                    <Controller
+                        control={form.control}
+                        name="applicant.gender"
+                        render={({ field }) => (
+                            <Field>
+                                <FieldLabel>Applicant Phone Number</FieldLabel>
+                                <Select
+                                    value={field.value ?? ""}
+                                    onValueChange={field.onChange}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Male" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="01">Male</SelectItem>
+                                        <SelectItem value="02">Female</SelectItem>
+                                        <SelectItem value="02">Other</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FieldDescription>
+                                    Enter Mobile Number
+                                </FieldDescription>
+                            </Field>
+                        )}
+                    />
 
-            <Input
-                {...form.register("applicant.address")}
-                placeholder="Address"
-            />
+                    <Controller
+                        control={form.control}
+                        name="applicant.mobile"
+                        render={({ field }) => (
+                            <Field>
+                                <FieldLabel>Applicant Phone Number</FieldLabel>
+                                <Input {...field} placeholder="8888888888" />
+                                <FieldDescription>
+                                    Enter Mobile Number
+                                </FieldDescription>
+                            </Field>
+                        )}
+                    />
 
-            <Button type="submit" className="mt-4">
-                Save Applicant
-            </Button>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4">
+
+                    <Controller
+                        control={form.control}
+                        name="applicant.role"
+                        render={({ field }) => (
+                            <Field>
+                                <FieldLabel>Applicant Role</FieldLabel>
+                                <Select
+                                    value={field.value ?? ""}
+                                    onValueChange={field.onChange}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Applicant" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Applicant">Applicant</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FieldDescription>
+                                    Enter Applicant's Role
+                                </FieldDescription>
+                            </Field>
+                        )}
+                    />
+
+                    <FieldSeparator />
+
+
+                    <Controller
+                        control={form.control}
+                        name="applicant.gender"
+                        render={({ field }) => (
+                            <Field>
+                                <FieldLabel>Applicant Address</FieldLabel>
+
+                                <Textarea {...field} placeholder="New Delhi" />
+                                <FieldDescription>
+                                    Enter Applicant's Address
+                                </FieldDescription>
+                            </Field>
+                        )}
+                    />
+
+                </div>
+
+                <FieldSeparator />
+
+
+                <div className="grid grid-cols-3 gap-4">
+
+                    <Controller
+                        control={form.control ?? ""}
+                        name="applicant.document"
+                        render={({ field }) => (
+                            <Field>
+                                <Dropzone maxFiles={1} onDrop={handleDocument} src={document}>
+                                    <DropzoneEmptyState>
+                                        <div className="flex flex-col items-center gap-2">
+                                            <div className="flex size-8 items-center justify-center rounded-md bg-muted text-muted-foreground">
+                                                <UploadIcon size={16} />
+                                            </div>
+                                            <p className="font-medium text-sm">Upload Applicant Document</p>
+                                            <p className="text-xs text-muted-foreground">
+                                                PDF only
+                                            </p>
+                                        </div>
+                                    </DropzoneEmptyState>
+                                    <DropzoneContent />
+                                </Dropzone>
+                            </Field>
+                        )}
+                    />
+
+
+                    <Controller
+                        control={form.control ?? ""}
+                        name="applicant.photo"
+                        render={({ field }) => (
+                            <Field>
+                                <Dropzone maxFiles={1} onDrop={handlePhoto} src={photo}>
+                                    <DropzoneEmptyState>
+                                        <div className="flex flex-col items-center gap-2">
+                                            <div className="flex size-8 items-center justify-center rounded-md bg-muted text-muted-foreground">
+                                                <UploadIcon size={16} />
+                                            </div>
+                                            <p className="font-medium truncate text-sm">Upload Applicant Photo</p>
+                                            <p className="text-xs text-muted-foreground">
+                                                JPG / PNG only
+                                            </p>
+                                        </div>
+                                    </DropzoneEmptyState>
+
+                                    <DropzoneContent />
+                                </Dropzone>
+
+                            </Field>
+                        )}
+                    />
+
+                    <Controller
+                        control={form.control ?? ""}
+                        name="applicant.signature"
+                        render={({ field }) => (
+                            <Field>
+                                <Dropzone maxFiles={1} onDrop={handleSignature} src={signature}>
+                                    <DropzoneEmptyState>
+                                        <div className="flex flex-col items-center gap-2">
+                                            <div className="flex size-8 items-center justify-center rounded-md bg-muted text-muted-foreground">
+                                                <UploadIcon size={16} />
+                                            </div>
+                                            <p className="font-medium truncate text-sm">Upload Applicant Signature</p>
+                                            <p className="text-xs text-muted-foreground">
+                                                JPG / PNG only
+                                            </p>
+                                        </div>
+                                    </DropzoneEmptyState>
+
+                                    <DropzoneContent />
+                                </Dropzone>
+                            </Field>
+                        )}
+                    />
+
+                </div>
+
+                <FieldSeparator />
+
+                <Button type="submit" className="mt-4 w-fit">
+                    Save Applicant
+                </Button>
+            </FieldGroup>
+
         </form>
     );
 }

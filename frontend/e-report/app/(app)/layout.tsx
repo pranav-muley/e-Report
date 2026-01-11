@@ -16,9 +16,9 @@ export default function AppLayout({
         {/* Sidebar controls its own width */}
         <AppSidebar />
 
-        <div className="flex flex-col flex-1 min-w-0">
+        <div className="flex flex-col flex-1 overflow-hidden min-w-0">
           <Header />
-          <main className="flex-1 overflow-auto p-6">
+          <main className="flex-1 overflow-auto p-6 [ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {children}
           </main>
           <Footer />

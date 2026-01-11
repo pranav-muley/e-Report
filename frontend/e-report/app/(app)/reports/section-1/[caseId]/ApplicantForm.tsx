@@ -66,10 +66,10 @@ export default function ApplicantForm({ caseId }: { caseId: string }) {
     return (
         <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="rounded-lg border p-6"
+            className="rounded-lg border border-accent p-6 shadow-2xs bg-white/50 dark:bg-transparent"
         >
             <FieldGroup>
-                <h3 className="font-semibold mb-4">Applicant Details</h3>
+                <p className="font-normal text-2xl mb-4">Applicant Details</p>
                 <div className="grid grid-cols-2 gap-4">
                     <Controller
                         control={form.control}
@@ -77,7 +77,7 @@ export default function ApplicantForm({ caseId }: { caseId: string }) {
                         render={({ field }) => (
                             <Field>
                                 <FieldLabel>Applicant Name</FieldLabel>
-                                <Input {...field} placeholder="John" />
+                                <Input className="border border-neutral-400/50 dark:border-accent" {...field} placeholder="John" />
                                 <FieldDescription>
                                     Enter Applicant's Name
                                 </FieldDescription>
@@ -91,7 +91,7 @@ export default function ApplicantForm({ caseId }: { caseId: string }) {
                         render={({ field }) => (
                             <Field>
                                 <FieldLabel>Applicant Age</FieldLabel>
-                                <Input {...field} placeholder="25" />
+                                <Input className="border border-neutral-400/50 dark:border-accent" {...field} placeholder="25" />
                                 <FieldDescription>
                                     Enter Applicant's Age
                                 </FieldDescription>
@@ -107,22 +107,22 @@ export default function ApplicantForm({ caseId }: { caseId: string }) {
                         name="applicant.gender"
                         render={({ field }) => (
                             <Field>
-                                <FieldLabel>Applicant Phone Number</FieldLabel>
+                                <FieldLabel>Applicant Gender</FieldLabel>
                                 <Select
                                     value={field.value ?? ""}
                                     onValueChange={field.onChange}
                                 >
-                                    <SelectTrigger>
+                                    <SelectTrigger className="border border-neutral-400/50 dark:border-accent">
                                         <SelectValue placeholder="Male" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="01">Male</SelectItem>
-                                        <SelectItem value="02">Female</SelectItem>
-                                        <SelectItem value="02">Other</SelectItem>
+                                        <SelectItem value="MALE">Male</SelectItem>
+                                        <SelectItem value="FEMALE">Female</SelectItem>
+                                        <SelectItem value="OTHER">Other</SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <FieldDescription>
-                                    Enter Mobile Number
+                                    Enter Applicant Gender
                                 </FieldDescription>
                             </Field>
                         )}
@@ -134,7 +134,7 @@ export default function ApplicantForm({ caseId }: { caseId: string }) {
                         render={({ field }) => (
                             <Field>
                                 <FieldLabel>Applicant Phone Number</FieldLabel>
-                                <Input {...field} placeholder="8888888888" />
+                                <Input className="border border-neutral-400/50 dark:border-accent" {...field} placeholder="8888888888" />
                                 <FieldDescription>
                                     Enter Mobile Number
                                 </FieldDescription>
@@ -156,15 +156,16 @@ export default function ApplicantForm({ caseId }: { caseId: string }) {
                                     value={field.value ?? ""}
                                     onValueChange={field.onChange}
                                 >
-                                    <SelectTrigger>
+                                    <SelectTrigger className="border border-neutral-400/50 dark:border-accent">
                                         <SelectValue placeholder="Applicant" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="Applicant">Applicant</SelectItem>
+                                        <SelectItem value="OTHER">Other</SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <FieldDescription>
-                                    Enter Applicant's Role
+                                    Enter Applicant Role
                                 </FieldDescription>
                             </Field>
                         )}
@@ -175,14 +176,14 @@ export default function ApplicantForm({ caseId }: { caseId: string }) {
 
                     <Controller
                         control={form.control}
-                        name="applicant.gender"
+                        name="applicant.address"
                         render={({ field }) => (
                             <Field>
                                 <FieldLabel>Applicant Address</FieldLabel>
 
-                                <Textarea {...field} placeholder="New Delhi" />
+                                <Textarea className="border border-neutral-400/50 dark:border-accent" {...field} placeholder="New Delhi" />
                                 <FieldDescription>
-                                    Enter Applicant's Address
+                                    Enter Applicant Address
                                 </FieldDescription>
                             </Field>
                         )}
@@ -200,7 +201,7 @@ export default function ApplicantForm({ caseId }: { caseId: string }) {
                         name="applicant.document"
                         render={({ field }) => (
                             <Field>
-                                <Dropzone maxFiles={1} onDrop={handleDocument} src={document}>
+                                <Dropzone maxFiles={1} onDrop={handleDocument} src={document} className="border border-neutral-400/50 dark:border-accent">
                                     <DropzoneEmptyState>
                                         <div className="flex flex-col items-center gap-2">
                                             <div className="flex size-8 items-center justify-center rounded-md bg-muted text-muted-foreground">
@@ -224,7 +225,7 @@ export default function ApplicantForm({ caseId }: { caseId: string }) {
                         name="applicant.photo"
                         render={({ field }) => (
                             <Field>
-                                <Dropzone maxFiles={1} onDrop={handlePhoto} src={photo}>
+                                <Dropzone maxFiles={1} onDrop={handlePhoto} src={photo} className="border border-neutral-400/50 dark:border-accent">
                                     <DropzoneEmptyState>
                                         <div className="flex flex-col items-center gap-2">
                                             <div className="flex size-8 items-center justify-center rounded-md bg-muted text-muted-foreground">
@@ -249,7 +250,7 @@ export default function ApplicantForm({ caseId }: { caseId: string }) {
                         name="applicant.signature"
                         render={({ field }) => (
                             <Field>
-                                <Dropzone maxFiles={1} onDrop={handleSignature} src={signature}>
+                                <Dropzone maxFiles={1} onDrop={handleSignature} src={signature} className="border border-neutral-400/50 dark:border-accent">
                                     <DropzoneEmptyState>
                                         <div className="flex flex-col items-center gap-2">
                                             <div className="flex size-8 items-center justify-center rounded-md bg-muted text-muted-foreground">

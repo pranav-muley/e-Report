@@ -37,7 +37,7 @@ export function NavMain({
 
     return (
         <SidebarGroup className="flex space-y-12">
-            <SidebarGroupLabel className="text-xl font-semibold text-neutral-900 dark:text-zinc-50">e-Report Platfrom</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-xl font-semibold text-neutral-900 dark:text-zinc-50">e-Report Platform</SidebarGroupLabel>
             <SidebarMenu>
                 {items.map((item) => (
                     <Collapsible

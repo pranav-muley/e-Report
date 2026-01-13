@@ -35,4 +35,6 @@ const policeStationSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-module.exports = mongoose.model("Policestation", policeStationSchema)
+module.exports =
+  mongoose.models.Policestation ||
+  mongoose.model("Policestation", policeStationSchema);

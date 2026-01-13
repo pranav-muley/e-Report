@@ -3,20 +3,21 @@ const Form = require("../model/form")
 const { transitionCaseStatus } = require("../service/caseStatusService")
 
 /* =========================
-   GET SUBMITTED FORMS
+   GET PENDING FORMS
    ========================= */
-async function getSubmittedForms(req, res, next) {
-  try {
-    const forms = await Form.find({ status: "SUBMITTED" })
-      .sort({ createdAt: -1 })
-      .populate("caseId", "branchCaseNumber sections status")
-      .populate("createdBy", "name role")
-
-    res.json({ success: true, forms })
-  } catch (err) {
-    next(err)
+   async function getPendingForms(req, res, next) {
+    try {
+      const forms = await Form.find({ status: "SUBMITTED" })
+        .sort({ createdAt: -1 })
+        .populate("caseId", "branchCaseNumber sections status")
+        .populate("createdBy", "name role")
+  
+      res.json({ success: true, forms })
+    } catch (err) {
+      next(err)
+    }
   }
-}
+  
 
 /* =========================
    APPROVE FORM
@@ -167,7 +168,7 @@ async function issueCaseFileController(req, res) {
 }
 
 module.exports = {
-  getSubmittedForms,
+  getPendingForms,
   approveForm,
   rejectForm,
   getFormForAdmin,

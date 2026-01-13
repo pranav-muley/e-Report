@@ -1,7 +1,7 @@
 const Person = require("../model/person")
 const Case = require("../model/case")
 const Form = require("../model/form")
-const PoliceStation = require("../model/policestation")
+const PoliceStation = require("../model/policeStation")
 
 async function prepareInterimBond125126Data(form, caseData) {
     const content = form.content.mr

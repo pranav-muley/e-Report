@@ -30,7 +30,7 @@ router.post("/api/casefiles/issue", issueCaseFileController)
 router.post(
   "/cases/:caseId/roznama/entries",
   auth,
-  requireAdmin,
+  requireRole("ADMIN"),
   addRoznamaEntry
 )
 

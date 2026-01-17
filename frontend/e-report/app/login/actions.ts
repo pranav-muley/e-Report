@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { serverFetch } from "@/lib/api/server-api";
+import { LoginResponse } from "@/types/login/login.type";
 
 export async function loginAction(
   _prevState: { error?: string } | null,
@@ -15,39 +16,27 @@ export async function loginAction(
     return { error: "Email and password required" };
   }
 
+  let res: LoginResponse;
+
   try {
-    const res = await serverFetch<{ token?: string }>(
-      "/login",
-      {
-        method: "POST",
-        body: { email, password },
-      }
-    );
-
-    // If backend sets cookie itself, you may not even need this
-    // Otherwise set it manually if token is returned
-    if (res.token) {
-      (await cookies()).set("refreshToken", res.token, {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-      });
-    }
-
-    redirect("/dashboard");
+    res = await serverFetch<LoginResponse>("/login", {
+      method: "POST",
+      body: { email, password },
+    });
   } catch {
     return { error: "Invalid credentials" };
   }
-}
 
-
-export async function logoutAction() {
-  try {
-    await serverFetch("/logout", { method: "POST" });
-  } catch {
-    // backend logout failure shouldn't block client logout
+  if (!res.success || !res.accessToken) {
+    return { error: "Invalid credentials" };
   }
 
-  (await cookies()).delete("refreshToken");
-  redirect("/login");
+  (await cookies()).set("accessToken", res.accessToken, {
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+    secure: process.env.NODE_ENV === "production",
+  });
+
+  redirect("/dashboard");
 }

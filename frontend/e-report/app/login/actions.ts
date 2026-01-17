@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { serverFetch } from "@/lib/api/server-api";
 
 export async function loginAction(
   _prevState: { error?: string } | null,
@@ -14,31 +15,39 @@ export async function loginAction(
     return { error: "Email and password required" };
   }
 
-  const res = await fetch("http://localhost:8081/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email, password }),
-    credentials: "include",
-    cache: "no-store",
-  });
+  try {
+    const res = await serverFetch<{ token?: string }>(
+      "/login",
+      {
+        method: "POST",
+        body: { email, password },
+      }
+    );
 
-  if (!res.ok) {
+    // If backend sets cookie itself, you may not even need this
+    // Otherwise set it manually if token is returned
+    if (res.token) {
+      (await cookies()).set("refreshToken", res.token, {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+      });
+    }
+
+    redirect("/dashboard");
+  } catch {
     return { error: "Invalid credentials" };
   }
+}
 
-  const setCookie = res.headers.get("set-cookie");
 
-  if (setCookie) {
-    (await cookies()).set({
-      name: "refreshToken",
-      value: setCookie.split("refreshToken=")[1]?.split(";")[0]!,
-      httpOnly: true,
-      sameSite: "lax",
-      path: "/",
-    });
+export async function logoutAction() {
+  try {
+    await serverFetch("/logout", { method: "POST" });
+  } catch {
+    // backend logout failure shouldn't block client logout
   }
 
-  redirect("/dashboard");
+  (await cookies()).delete("refreshToken");
+  redirect("/login");
 }

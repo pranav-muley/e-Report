@@ -1,0 +1,16 @@
+{
+    "header": {
+      "department": "महाराष्ट्र शासन",
+      "office": "पोलीस विभाग"
+    },
+    "labels": {
+      "branchCaseNo": "शाखा गुन्हा क्रमांक",
+      "policeCaseNo": "पोलीस ठाणे गुन्हा क्रमांक",
+      "sections": "कलमे",
+      "policeStation": "पोलीस ठाणे",
+      "district": "जिल्हा",
+      "registrationDate": "नोंद दिनांक",
+      "proceedings": "कार्यवाही नोंद",
+      "remarks": "शेरा"
+    }
+  }  

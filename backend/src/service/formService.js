@@ -1,12 +1,26 @@
 const Form = require("../model/form")
 const CaseEvent = require("../model/caseEvent")
+const { join } = require("path")
+const { generatePdf } = require("../pdf")
 
+/**
+ * ADMIN – Get all pending (submitted) forms
+ */
+async function getPendingForms() {
+  const forms = await Form.find({ status: "SUBMITTED" })
+    .sort({ createdAt: -1 })
+    .populate("caseId", "branchCaseNumber sections")
+    .populate("createdBy", "name")
+
+  return forms
+}
+
+/**
+ * ADMIN – Approve submitted form
+ */
 async function approveForm({ formId, adminUserId }) {
   const form = await Form.findById(formId)
-
-  if (!form) {
-    throw new Error("Form not found")
-  }
+  if (!form) throw new Error("Form not found")
 
   if (form.status !== "SUBMITTED") {
     throw new Error("Only submitted forms can be approved")
@@ -30,16 +44,14 @@ async function approveForm({ formId, adminUserId }) {
   return form
 }
 
+/**
+ * ADMIN – Reject submitted form
+ */
 async function rejectForm({ formId, adminUserId, reason }) {
-  if (!reason) {
-    throw new Error("Rejection reason is required")
-  }
+  if (!reason) throw new Error("Rejection reason is required")
 
   const form = await Form.findById(formId)
-
-  if (!form) {
-    throw new Error("Form not found")
-  }
+  if (!form) throw new Error("Form not found")
 
   if (form.status !== "SUBMITTED") {
     throw new Error("Only submitted forms can be rejected")
@@ -48,8 +60,8 @@ async function rejectForm({ formId, adminUserId, reason }) {
   form.status = "REJECTED"
   form.approval = {
     approvedBy: adminUserId,
-    rejectionReason: reason,
-    approvedAt: new Date()
+    approvedAt: new Date(),
+    rejectionReason: reason
   }
 
   await form.save()
@@ -65,15 +77,12 @@ async function rejectForm({ formId, adminUserId, reason }) {
   return form
 }
 
-import { join } from "path"
-import { generatePdf } from "../pdf"
-
+/**
+ * ADMIN – Issue approved form (generate PDF)
+ */
 async function issueForm({ formId, adminUserId }) {
   const form = await Form.findById(formId)
-
-  if (!form) {
-    throw new Error("Form not found")
-  }
+  if (!form) throw new Error("Form not found")
 
   if (form.status !== "APPROVED") {
     throw new Error("Only approved forms can be issued")
@@ -83,10 +92,9 @@ async function issueForm({ formId, adminUserId }) {
     "uploads",
     "cases",
     String(form.caseId),
-    `${form.formType}.pdf`
+    `${form._id}.pdf`
   )
 
-  // Generate PDF
   await generatePdf({
     formType: form.formType,
     content: form.content.mr,
@@ -95,6 +103,7 @@ async function issueForm({ formId, adminUserId }) {
 
   form.status = "ISSUED"
   form.issuedAt = new Date()
+  form.issuedBy = adminUserId
   form.generatedPdfPath = outputPath
 
   await form.save()
@@ -109,5 +118,9 @@ async function issueForm({ formId, adminUserId }) {
   return form
 }
 
-
-export default { approveForm, issueForm, rejectForm }
+module.exports = {
+  getPendingForms,
+  approveForm,
+  rejectForm,
+  issueForm
+}

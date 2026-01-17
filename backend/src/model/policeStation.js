@@ -1,14 +1,40 @@
 const mongoose = require("mongoose")
 
-
-const PoliceStationSchema = new mongoose.Schema(
+const policeStationSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
-    address: { type: String },
-    district: { type: String },
-    taluka: { type: String }
+    name: {
+      type: String,
+      required: true,
+      trim: true
+    },
+
+    code: {
+      type: String,
+      required: true,
+      trim: true,
+      unique: true,
+      index: true
+    },
+
+    address: {
+      type: String,
+      trim: true
+    },
+
+    district: {
+      type: String,
+      trim: true
+    },
+
+    isActive: {
+      type: Boolean,
+      default: true,
+      index: true
+    }
   },
   { timestamps: true }
 )
 
-export default mongoose.model("policeStation", PoliceStationSchema)
+module.exports =
+  mongoose.models.Policestation ||
+  mongoose.model("Policestation", policeStationSchema);

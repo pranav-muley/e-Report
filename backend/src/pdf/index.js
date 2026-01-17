@@ -1,35 +1,62 @@
 const PDFDocument = require("pdfkit")
-const { existsSync, mkdirSync, createWriteStream } = require("fs")
-const { dirname } = require("path")
+const fs = require("fs")
+const path = require("path")
 
+const FONT_PATH = path.resolve(
+  __dirname,
+  "../assets/fonts/NotoSansDevanagari-Regular.ttf"
+)
 
-const templates = {
-  NOTICE_130: require("./templates/notice_130.js"),
-  FINAL_ORDER: require("./templates/final_order.js")
+function loadTemplate(type, version) {
+  const base = path.join(
+    __dirname,
+    "templates",
+    type.toLowerCase().replace(/_/g, "-"),
+    version
+  )
+
+  return {
+    meta: require(path.join(base, "meta.json")),
+    text: require(path.join(base, "text.mr.json")),
+    render: require(path.join(base, "layout.js")).render
+  }
 }
 
-export async function generatePdf({ formType, content, outputPath }) {
+/**
+ * Generates ONE CaseFile PDF with MULTIPLE pages
+ */
+async function generatePdf({ pages, outputPath }) {
   return new Promise((resolve, reject) => {
-    const doc = new PDFDocument({ size: "A4", margin: 50 })
+    try {
+      const doc = new PDFDocument({ size: "A4", margin: 50 })
 
-    const dir = dirname(outputPath)
-    if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
+      const dir = path.dirname(outputPath)
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
 
-    const stream = createWriteStream(outputPath)
-    doc.pipe(stream)
+      const stream = fs.createWriteStream(outputPath)
+      doc.pipe(stream)
 
-    // Marathi font
-    doc.font("assets/fonts/NotoSansDevanagari-Regular.ttf")
+      // Load Marathi font ONCE
+      doc.font(FONT_PATH)
 
-    if (!templates[formType]) {
-      return reject(new Error(`No PDF template for formType: ${formType}`))
+      pages.forEach((page, index) => {
+        if (index > 0) doc.addPage()
+
+        const template = loadTemplate(page.type, page.version)
+
+        template.render(doc, page.data, template.text)
+      })
+
+      doc.end()
+
+      stream.on("finish", () => resolve(outputPath))
+      stream.on("error", reject)
+    } catch (err) {
+      reject(err)
     }
-
-    templates[formType](doc, content)
-
-    doc.end()
-
-    stream.on("finish", resolve)
-    stream.on("error", reject)
   })
+}
+
+module.exports = {
+  generatePdf
 }

@@ -10,6 +10,9 @@ const connectDB = require("./config/mongoConfig")
 const authRoutes = require("./routes/authRoutes")
 const caseRoutes = require("./routes/caseRoutes")
 const personRoutes = require("./routes/personRoutes")
+const policeStationRoutes = require("./routes/policeStationRoutes")
+const formRoutes = require("./routes/formRoutes")
+const adminRoutes = require("./routes/adminRoutes")
 
 const app = express()
 
@@ -23,14 +26,24 @@ app.use(cors({
 app.use(helmet())
 app.use(morgan("dev"))
 
+
+// Health check
+app.get("/", (req, res) => {
+  res.send("E-Report API is running 🚀");
+});
+
 // Routes
 app.use("/", authRoutes)
 app.use("/", caseRoutes)
 app.use("/", personRoutes)
+app.use("/", policeStationRoutes)
+app.use("/", formRoutes)
+app.use("/", adminRoutes)
 
 
-connectDB()
-
-app.listen(8081, () => {
-  console.log("Server running on port 8081")
-})
+const PORT = process.env.PORT || 8081;
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+});

@@ -1,0 +1,28 @@
+{
+    "header": {
+        "govt": "महाराष्ट्र शासन",
+        "authority": "विशेष कार्यकारी दंडाधिकारी",
+        "officeLine": "यांचे समोरील कामकाज"
+    },
+    "title": {
+        "main": "रोजनामा / कार्यवाही पत्रक"
+    },
+    "caseInfoLabels": {
+        "branchCaseNumber": "वि.का.द शाखा चॅप्टर केस क्रमांक",
+        "policeCaseNumber": "पोलीस स्टेशन चॅप्टर केस क्र.",
+        "policeStation": "पोलीस ठाणे",
+        "policeStationCode": "पोलीस ठाणे कोड",
+        "sections": "भा.ना.सु.सं. 2023 कलम",
+        "complainant": "फिर्यादी",
+        "defendants": "सामनेवाले"
+    },
+    "table": {
+        "date": "दिनांक",
+        "proceedings": "रोजनामा",
+        "nextDate": "पुढील कार्यवाही तारीख"
+    },
+    "signatures": {
+        "presentAccused": "हजर असलेले सामनेवाले :",
+        "magistrate": "विशेष कार्यकारी दंडाधिकारी"
+    }
+}

@@ -30,7 +30,7 @@ import {
     useSidebar,
 } from "@/components/ui/sidebar"
 import { ThemeSwitcher } from "@/components/ui/ThemeToggle"
-import { logoutAction } from "@/app/login/actions"
+import { logoutAction } from "@/lib/actions/auth"
 
 export function NavUser({
     user,

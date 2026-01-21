@@ -1,18 +1,18 @@
 "use client";
 
-import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
 
 import {
     Field,
     FieldDescription,
     FieldGroup,
     FieldLabel,
-    FieldLegend,
     FieldSeparator,
-    FieldSet,
+    FieldSet
 } from "@/components/ui/field";
 
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
     Select,
@@ -21,25 +21,17 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 
+import { createCase } from "@/lib/actions/createCase";
+import { fetchPoliceStations } from "@/lib/api/policeStation";
 import {
     sectionOneSchema,
     SectionOneValues,
 } from "@/types/section-1/sectionOneSchema";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { fetchPoliceStations } from "@/lib/api/policeStation";
 import { useQuery } from "@tanstack/react-query";
-
-export default function SectionOneForm({
-    onSuccess,
-}: {
-    onSuccess: (caseId: string) => void;
-}) {
-
-
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
+export default function SectionOneForm() {
     const {
         data: stations = [],
         isLoading,
@@ -50,18 +42,43 @@ export default function SectionOneForm({
         staleTime: 5 * 60 * 1000,
     });
 
+    const [isPending, startTransition] = useTransition();
+    const router = useRouter();
+
     const form = useForm<SectionOneValues>({
         resolver: zodResolver(sectionOneSchema),
         defaultValues: {
             branchCaseNumber: "",
             policeStationId: "",
             policeCaseNumber: "",
+            sections: "",
             status: "DRAFT",
         },
     });
-    const router = useRouter();
+
     const onSubmit = async (values: SectionOneValues) => {
-        console.log(values);
+        startTransition(async () => {
+            try {
+                const sectionList = values.sections.split(",");
+                console.log(sectionList)
+                const result = await createCase({
+                    branchCaseNumber: values.branchCaseNumber,
+                    policeStationCaseNumber: values.policeCaseNumber,
+                    policeStationId: values.policeStationId,
+                    sections: sectionList,
+                });
+
+                if (result.success) {
+                    console.log("Case created successfully:", result.data);
+                    router.push(`/reports/section-1/${result.data?.caseId}`);
+                    form.reset();
+                } else {
+                    console.error("Error creating case:", result.error);
+                }
+            } catch (error) {
+                console.error("Unexpected error:", error);
+            }
+        });
     };
 
     return (
@@ -100,7 +117,7 @@ export default function SectionOneForm({
                                             <FieldLabel>Police Station</FieldLabel>
 
                                             <Select
-                                                value={field.value ?? ""}
+                                                value={field.value}
                                                 onValueChange={field.onChange}
                                             >
                                                 <SelectTrigger className="border border-neutral-400/50 dark:border-accent">
@@ -116,8 +133,8 @@ export default function SectionOneForm({
                                                 <SelectContent>
                                                     {stations.map((station: any) => (
                                                         <SelectItem
-                                                            key={station.id}
-                                                            value={station.id}
+                                                            key={station._id}
+                                                            value={station._id}
                                                         >
                                                             {station.name}
                                                         </SelectItem>
@@ -132,13 +149,14 @@ export default function SectionOneForm({
                                     )}
                                 />
 
+
                                 <Controller
                                     control={form.control}
                                     name="policeCaseNumber"
                                     render={({ field }) => (
                                         <Field>
                                             <FieldLabel>Police Station Case No.</FieldLabel>
-                                            <Input className="border border-neutral-400/50 dark:border-accent" {...field} />
+                                            <Input className="border border-neutral-400/50 dark:border-accent" {...field} placeholder="Enter Police Station Case No." />
                                             <FieldDescription>
                                                 Enter Police case number
                                             </FieldDescription>
@@ -146,6 +164,21 @@ export default function SectionOneForm({
                                     )}
                                 />
                             </div>
+
+                            <Controller
+                                control={form.control}
+                                name="sections"
+                                render={({ field }) => (
+                                    <Field>
+                                        <FieldLabel>Sections</FieldLabel>
+                                        <Input className="border border-neutral-400/50 dark:border-accent" {...field} placeholder="Enter Case Sections, separated by commas" />
+                                        <FieldDescription>
+                                            Enter Case Sections
+                                        </FieldDescription>
+                                    </Field>
+                                )}
+                            />
+
                             <Controller
                                 control={form.control}
                                 name="status"
@@ -160,9 +193,9 @@ export default function SectionOneForm({
                                                 <SelectValue placeholder="Draft" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="DRAFT">Draft</SelectItem>
-                                                <SelectItem value="PENDING">Pending</SelectItem>
-                                                <SelectItem value="REJECTED">Rejected</SelectItem>
+                                                <SelectItem key="DRAFT" value="DRAFT">Draft</SelectItem>
+                                                <SelectItem key="PENDING" value="PENDING">Pending</SelectItem>
+                                                <SelectItem key="REJECTED" value="REJECTED">Rejected</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </Field>
@@ -174,8 +207,10 @@ export default function SectionOneForm({
                     <FieldSeparator />
 
                     <Field orientation="horizontal">
-                        <Button type="submit">Submit</Button>
-                        <Button type="button" variant="outline">
+                        <Button type="submit" disabled={isPending}>
+                            {isPending ? "Submitting..." : "Submit"}
+                        </Button>
+                        <Button type="button" variant="outline" onClick={() => form.reset()}>
                             Cancel
                         </Button>
                     </Field>

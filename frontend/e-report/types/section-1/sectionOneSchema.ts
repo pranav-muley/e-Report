@@ -5,6 +5,7 @@ export const sectionOneSchema = z.object({
   policeStationId: z.string().min(1),
   policeCaseNumber: z.string().min(1),
   status: z.enum(["DRAFT", "PENDING", "REJECTED"]),
+  sections: z.string().min(1),
 });
 
 export type SectionOneValues = z.infer<typeof sectionOneSchema>;

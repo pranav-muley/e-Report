@@ -1,30 +1,38 @@
+
 "use server";
 
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 const BASE_URL = "https://e-report-t9xh.onrender.com";
 
 async function refreshAccessToken() {
-  const res = await fetch(`${BASE_URL}/refresh/token`, {
-    method: "POST",
-    credentials: "include",
-    cache: "no-store",
-  });
+  try {
+    const res = await fetch(`${BASE_URL}/refresh/token`, {
+      method: "POST",
+      credentials: "include",
+      cache: "no-store",
+    });
 
-  if (!res.ok) {
-    throw new Error("Refresh token expired");
+    if (!res.ok) {
+      throw new Error("Refresh token expired");
+    }
+
+    const data = await res.json();
+
+    (await cookies()).set("accessToken", data.accessToken, {
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+      secure: process.env.NODE_ENV === "production",
+    });
+
+    return data.accessToken;
+  } catch (error) {
+    // Clear cookies and redirect to login
+    (await cookies()).delete("accessToken");
+    redirect("/login");
   }
-
-  const data = await res.json();
-
-  (await cookies()).set("accessToken", data.accessToken, {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-    secure: process.env.NODE_ENV === "production",
-  });
-
-  return data.accessToken;
 }
 
 export async function serverFetch<T>(
@@ -52,12 +60,18 @@ export async function serverFetch<T>(
   let res = await makeRequest(accessToken);
 
   if (res.status === 401) {
-    accessToken = await refreshAccessToken();
-    res = await makeRequest(accessToken);
+    try {
+      accessToken = await refreshAccessToken();
+      res = await makeRequest(accessToken);
+    } catch (error) {
+      // refreshAccessToken will redirect to login
+      throw error;
+    }
   }
 
   if (!res.ok) {
-    throw new Error("API request failed");
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "API request failed");
   }
 
   return res.json();

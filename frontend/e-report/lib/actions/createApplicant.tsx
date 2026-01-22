@@ -12,15 +12,9 @@ export async function createApplicant(formData: FormData) {
         const gender = formData.get("gender") as string;
         const mobile = formData.get("mobile") as string;
         const address = formData.get("address") as string;
-        const photo = formData.get("photo") as File;
-        const signature = formData.get("signature") as File;
-        const document = formData.get("document") as File;
-
-        console.log("=== Server Action Debug ===");
-        console.log("Received files:");
-        console.log("Photo:", photo?.name, photo?.size, photo?.type);
-        console.log("Signature:", signature?.name, signature?.size, signature?.type);
-        console.log("Document:", document?.name, document?.size, document?.type);
+        const photo = formData.get("photo") as File | null;
+        const signature = formData.get("signature") as File | null;
+        const document = formData.get("document") as File | null;
 
         // Map gender to API format
         const genderMap: Record<string, string> = {
@@ -30,7 +24,7 @@ export async function createApplicant(formData: FormData) {
         };
         const apiGender = genderMap[gender] || gender;
 
-        // Create new FormData for API - recreate from scratch
+        // Create new FormData for API - reconstruct properly
         const apiFormData = new FormData();
         apiFormData.append("name", name);
         apiFormData.append("role", role);
@@ -39,35 +33,26 @@ export async function createApplicant(formData: FormData) {
         apiFormData.append("mobile", mobile);
         apiFormData.append("address", address);
 
-        // Append files - ensure they're proper File/Blob objects
-        if (photo && photo.size > 0) {
+        // Append files only if they exist and have size
+        if (photo instanceof File && photo.size > 0) {
             apiFormData.append("photo", photo, photo.name);
         }
-        if (signature && signature.size > 0) {
+        if (signature instanceof File && signature.size > 0) {
             apiFormData.append("signature", signature, signature.name);
         }
-        if (document && document.size > 0) {
+        if (document instanceof File && document.size > 0) {
             apiFormData.append("document", document, document.name);
         }
 
-        console.log("=== Sending to API ===");
-        console.log("FormData entries:");
-        for (const [key, value] of apiFormData.entries()) {
-            if (value instanceof File) {
-                console.log(`${key}:`, {
-                    name: value.name,
-                    size: value.size,
-                    type: value.type,
-                });
-            } else {
-                console.log(`${key}:`, value);
-            }
-        }
-
-        const result = await serverFetchMultipart(
-            `/cases/${caseId}/persons`,
-            apiFormData
-        );
+        const result = await serverFetchMultipart<{ 
+            success: boolean;
+            personId: string;
+            files: {
+                photo?: string;
+                signature?: string;
+                document?: string;
+            };
+        }>(`/cases/${caseId}/persons`, apiFormData);
 
         return { success: true, data: result };
     } catch (error) {

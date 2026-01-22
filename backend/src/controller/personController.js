@@ -8,6 +8,11 @@ async function createPerson(req, res, next) {
     const { caseId } = req.params;
     const { name, role, address, age, gender, mobile } = req.body;
 
+    console.log("=== createPerson Debug ===");
+    console.log("Body:", { name, role, address, age, gender, mobile });
+    console.log("req.files:", req.files);
+    console.log("req.files keys:", req.files ? Object.keys(req.files) : "none");
+
     const existingCase = await Case.findById(caseId);
     if (!existingCase) return res.status(404).json({ message: "Case not found" });
 
@@ -15,6 +20,11 @@ async function createPerson(req, res, next) {
     const signatureFile = req.files?.signature?.[0];
     const photoFile = req.files?.photo?.[0];
     const documentFile = req.files?.document?.[0];
+
+    console.log("Files extracted:");
+    console.log("photoFile:", photoFile?.originalname, photoFile?.size);
+    console.log("signatureFile:", signatureFile?.originalname, signatureFile?.size);
+    console.log("documentFile:", documentFile?.originalname, documentFile?.size);
 
     // 1) create person first
     const person = await Person.create({
@@ -37,14 +47,17 @@ async function createPerson(req, res, next) {
     
         const path = `persons/${folder}/${person._id}.${ext}`;
     
+        console.log(`Uploading ${folder}:`, path);
         await uploadFile({
           buffer: file.buffer,
           path,
           contentType: file.mimetype,
         });
+        console.log(`Successfully uploaded ${folder}`);
         return path;
       } catch (err) {
-        console.log(err);
+        console.error(`Error uploading ${folder}:`, err);
+        // Don't fail the whole request if a file upload fails
         return null;
       }
     };
@@ -54,6 +67,7 @@ async function createPerson(req, res, next) {
     if (photoFile) person.files.photo = await uploadOne(photoFile, "photos");
     if (documentFile) person.files.document = await uploadOne(documentFile, "documents");
 
+    console.log("Saving person with files:", person.files);
     // 3) save updated file paths
     await person.save();
 
@@ -63,7 +77,7 @@ async function createPerson(req, res, next) {
       files: person.files,
     });
   } catch (err) {
-    console.log(err);
+    console.error("Error in createPerson:", err);
     next(err);
   }
 }

@@ -150,7 +150,7 @@ export default function DefendantsForm({ caseId }: { caseId: string }) {
                             </FieldDescription>
                         </Field>
 
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid md:grid-cols-3 grid-cols-1 gap-4">
 
                             <Controller
                                 control={form.control ?? ""}

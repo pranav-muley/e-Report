@@ -12,16 +12,29 @@ type ThemeContextValue = {
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-    const [theme, setThemeState] = useState<Theme>("dark");
+    // Initialize with a function to avoid hydration mismatch
+    const [theme, setThemeState] = useState<Theme>(() => {
+        // This will only run on the client
+        if (typeof window !== "undefined") {
+            const saved = localStorage.getItem("theme") as Theme | null;
+            return saved ?? "light";
+        }
+        return "light"; // Default for SSR
+    });
 
-    // Load theme on mount
+    // Sync with the script that runs before hydration
     useEffect(() => {
         const saved = localStorage.getItem("theme") as Theme | null;
         const initial = saved ?? "light";
 
-        setThemeState(initial);
+        // Only update if different to avoid unnecessary re-renders
+        if (theme !== initial) {
+            setThemeState(initial);
+        }
+
+        // Ensure the class is set (in case script didn't run)
         document.documentElement.classList.toggle("dark", initial === "dark");
-    }, []);
+    }, []); // Only run once on mount
 
     const setTheme = (next: Theme) => {
         setThemeState(next);

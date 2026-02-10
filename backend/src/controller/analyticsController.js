@@ -23,7 +23,7 @@ async function getAnalyticsOverview(req, res, next) {
     const activeCasesPromise = Case.countDocuments({ ...caseQuery, status: { $ne: "CLOSED" } })
 
     const pendingFormsPromise = Form.countDocuments(
-      isAdmin ? { status: "SUBMITTED" } : { status: "SUBMITTED", createdBy: req.user.id }
+      isAdmin ? { status: "DRAFT" } : { status: "DRAFT", createdBy: req.user.id }
     )
 
     const casesByPoliceStationPromise = Case.aggregate([
@@ -51,14 +51,14 @@ async function getAnalyticsOverview(req, res, next) {
 
     const [totalCases, closedCases, activeCases, pendingForms,
       casesByPoliceStation, casesBySection, avgTimeByStatus] = await Promise.all([
-      totalCasesPromise,
-      closedCasesPromise,
-      activeCasesPromise,
-      pendingFormsPromise,
-      casesByPoliceStationPromise,
-      casesBySectionPromise,
-      avgTimeByStatusPromise
-    ])
+        totalCasesPromise,
+        closedCasesPromise,
+        activeCasesPromise,
+        pendingFormsPromise,
+        casesByPoliceStationPromise,
+        casesBySectionPromise,
+        avgTimeByStatusPromise
+      ])
 
     const policeStationIds = casesByPoliceStation.map(i => i._id).filter(Boolean)
     const stations = await PoliceStation.find({ _id: { $in: policeStationIds } })
